@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0B0C0B;
+  --foreground: #F3FEF5;
+  
+  /* Sova Black Palette */
+  --sova-black-900: #0B0C0B;
+  --sova-black-800: #0E0F0E;
+  --sova-black-700: #121412;
+  --sova-black-600: #171917;
+  --sova-black-500: #191C19;
+  --sova-black-400: #474947;
+  
+  /* Sova Mint Palette */
+  --sova-mint-500: #84F29B;
+  --sova-mint-600: #78DC8D;
+  --sova-mint-700: #5EAC6E;
+  --sova-mint-400: #9DF5AF;
+  --sova-mint-300: #ADF6BC;
+}
+
+@theme inline {
+  --color-brand-black: var(--sova-black-900);
+  --color-brand-black-light: var(--sova-black-600);
+  --color-brand-mint: var(--sova-mint-500);
+  --color-brand-mint-dark: var(--sova-mint-700);
+  --color-brand-mint-light: var(--sova-mint-300);
+  
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
