@@ -39,21 +39,27 @@ export default function ChatPage() {
 
   // ── Load KB ─────────────────────────────────────────────────────────────────
   useEffect(() => {
-    fetch("/kb/chunks_with_vectors.json")
-      .then((r) => {
-        if (!r.ok) throw new Error("Failed to load KB file: " + r.status);
-        return r.json();
-      })
-      .then((data) => {
-        kbRef.current = data;
-        setKbReady(true);
-        setKbError(false);
-      })
-      .catch((err) => {
-        console.error("Knowledge Base failed to load:", err);
-        setKbReady(false);
-        setKbError(true);
-      });
+    // Небольшая задержка, чтобы убедиться, что гидратация прошла успешно
+    const timer = setTimeout(() => {
+      fetch("/kb/chunks_with_vectors.json")
+        .then((r) => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json();
+        })
+        .then((data) => {
+          kbRef.current = data;
+          setKbReady(true);
+          setKbError(false);
+          setError(null);
+        })
+        .catch((err) => {
+          console.error("Knowledge Base failed to load:", err);
+          setError(`KB LOAD ERROR: ${err.message}. Check if /public/kb/ exists on Vercel.`);
+          setKbReady(false);
+          setKbError(true);
+        });
+    }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   // ── Auto-scroll ─────────────────────────────────────────────────────────────
@@ -217,20 +223,24 @@ export default function ChatPage() {
         <div className="flex items-center gap-2 bg-brand-black-light/80 px-3 py-1.5 rounded-full border border-white/5">
           <span className={`w-2 h-2 rounded-full ${kbReady ? 'bg-brand-mint animate-pulse' : kbError ? 'bg-red-500' : 'bg-amber-500'}`} />
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-            {kbReady ? "Ready" : kbError ? "Error" : "Loading..."}
+            {kbReady ? "Ready" : kbError ? `Error: ${error || 'Fail'}` : "Loading..."}
           </span>
         </div>
       </header>
 
       {/* Chat Messages */}
-      <main ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-thin scrollbar-thumb-white/10">
+      <main
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-thin scrollbar-thumb-white/10"
+        style={{ backgroundImage: "url('/back.png')", backgroundSize: 'cover', backgroundAttachment: 'fixed', backgroundPosition: 'center' }}
+      >
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
-            <div className="w-20 h-20 bg-brand-mint/5 rounded-full flex items-center justify-center mb-6">
-              <img src="/favicon.ico" alt="Sova" className="w-12 h-12 grayscale opacity-50" />
+          <div className="h-full flex flex-col items-center justify-center text-center">
+            <div className="w-20 h-20 bg-brand-mint/10 rounded-full flex items-center justify-center mb-6">
+              <img src="/favicon.ico" alt="Sova" className="w-12 h-12" />
             </div>
-            <p className="text-xl font-medium mb-2">How can I help you?</p>
-            <p className="text-sm max-w-xs">Ask about fees, security, or how to start with Sova Protocol.</p>
+            <p className="text-xl font-medium mb-2 text-white">How can I help you?</p>
+            <p className="text-sm max-w-xs text-slate-300">Ask about fees, security, or how to start with Sova Protocol.</p>
           </div>
         )}
 
@@ -289,7 +299,9 @@ export default function ChatPage() {
           </div>
         )}
 
-        <div className="max-w-4xl mx-auto flex items-end gap-3">
+        <div className="max-w-6xl mx-auto flex items-center gap-3 w-full">
+          <img src="/sova1.webp" alt="" className="hidden lg:block w-24 h-24 object-contain shrink-0" />
+
           <div className="flex-1 relative bg-brand-black-light rounded-2xl border border-white/5 focus-within:border-brand-mint/50 transition-colors shadow-inner">
             <textarea
               ref={textareaRef}
@@ -332,6 +344,8 @@ export default function ChatPage() {
               </button>
             )}
           </div>
+
+          <img src="/sova2.webp" alt="" className="hidden lg:block w-24 h-24 object-contain shrink-0" />
         </div>
       </footer>
     </div>
