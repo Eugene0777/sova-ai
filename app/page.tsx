@@ -261,8 +261,13 @@ export default function ChatPage() {
                       strong: ({ ...props }) => <strong className="font-bold text-brand-mint" {...props} />,
                     }}
                   >
-                    {/* Fix for AI missing the dot in numbered lists (e.g. "3 **" -> "3. **") */}
-                    {m.content.replace(/^(\d+)\s+(\*\*)/gm, '$1. $2')}
+                    {m.content
+                      // 1. Вставляем перенос строки перед цифрой, если она идет после точки и пробела (исправляет слипшиеся пункты)
+                      .replace(/\. (\d+)\. /g, '.\n$1. ')
+                      // 2. Исправляем отсутствие точки после цифры перед жирным текстом (например, "3 **" -> "3. **")
+                      .replace(/^(\d+)\s+(\*\*)/gm, '$1. $2')
+                      .replace(/(\. )(\d+)\s+(\*\*)/g, '$1\n$2. $3')
+                    }
                   </ReactMarkdown>
                 </div>
               </div>
