@@ -207,7 +207,7 @@ export default function ChatPage() {
       <header className="flex items-center justify-between px-6 py-4 border-b border-brand-mint/10 bg-brand-black-light/50 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-brand-mint/10">
-            <img src="/logo.png" alt="Sova Logo" className="w-full h-full object-cover" />
+            <img src="/favicon.ico" alt="Sova Logo" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="font-bold text-lg">AI Sova Support</h1>
@@ -227,7 +227,7 @@ export default function ChatPage() {
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
             <div className="w-20 h-20 bg-brand-mint/5 rounded-full flex items-center justify-center mb-6">
-              <img src="/logo.png" alt="Sova" className="w-12 h-12 grayscale opacity-50" />
+              <img src="/favicon.ico" alt="Sova" className="w-12 h-12 grayscale opacity-50" />
             </div>
             <p className="text-xl font-medium mb-2">How can I help you?</p>
             <p className="text-sm max-w-xs">Ask about fees, security, or how to start with Sova Protocol.</p>
