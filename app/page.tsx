@@ -217,7 +217,9 @@ export default function ChatPage() {
           </div>
           <div>
             <h1 className="font-bold text-lg">AI Sova Support</h1>
-            <p className="text-xs text-slate-400 font-mono">docs.sova.io · RAG enabled</p>
+            <p className="text-xs text-slate-400 font-mono">
+              dev - <a href="https://x.com/kuznetsjeka" target="_blank" className="hover:text-brand-mint underline underline-offset-2 transition-colors">Kuznets</a>
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2 bg-brand-black-light/80 px-3 py-1.5 rounded-full border border-white/5">
