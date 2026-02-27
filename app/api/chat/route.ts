@@ -26,7 +26,9 @@ RULES:
 2. If the answer is not in the CONTEXT - say: "This information was not found in Sova documentation."
 3. DO NOT write a list of links or sources at the end of the response.
 4. Respond in English by default.
-5. Be concise.`;
+5. FORMATTING: Use valid Markdown. For numbered lists, ALWAYS use "1. ", "2. " (number followed by a dot and space).
+6. BOLDING: Use **Bold** for key terms and component names.
+7. Be concise.`;
 
 export async function POST(request: Request): Promise<Response> {
     // 1. Security: Origin check

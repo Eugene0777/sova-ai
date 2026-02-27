@@ -257,10 +257,12 @@ export default function ChatPage() {
                       p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                       ul: ({ ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
                       ol: ({ ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
+                      li: ({ ...props }) => <li className="mb-1 ml-1" {...props} />,
                       strong: ({ ...props }) => <strong className="font-bold text-brand-mint" {...props} />,
                     }}
                   >
-                    {m.content}
+                    {/* Fix for AI missing the dot in numbered lists (e.g. "3 **" -> "3. **") */}
+                    {m.content.replace(/^(\d+)\s+(\*\*)/gm, '$1. $2')}
                   </ReactMarkdown>
                 </div>
               </div>
