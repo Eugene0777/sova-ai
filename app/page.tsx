@@ -29,6 +29,7 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [kbReady, setKbReady] = useState(false);
+  const [kbError, setKbError] = useState(false);
 
   // Ref for AbortController
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -38,13 +39,24 @@ export default function ChatPage() {
 
   // ── Load KB ─────────────────────────────────────────────────────────────────
   useEffect(() => {
+    console.log("Starting KB load...");
     fetch("/kb/chunks_with_vectors.json")
-      .then((r) => r.json())
+      .then((r) => {
+        console.log("KB Response status:", r.status);
+        if (!r.ok) throw new Error("Failed to load KB file: " + r.status);
+        return r.json();
+      })
       .then((data) => {
+        console.log("KB Data loaded successfully, chunks:", data.length);
         kbRef.current = data;
         setKbReady(true);
+        setKbError(false);
       })
-      .catch(() => setKbReady(false));
+      .catch((err) => {
+        console.error("KB Load Error:", err);
+        setKbReady(false);
+        setKbError(true);
+      });
   }, []);
 
   // ── Auto-scroll ─────────────────────────────────────────────────────────────
@@ -198,7 +210,7 @@ export default function ChatPage() {
       <header className="flex items-center justify-between px-6 py-4 border-b border-brand-mint/10 bg-brand-black-light/50 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-brand-mint/10">
-            <img src="/favicon.ico" alt="Sova Logo" className="w-full h-full object-cover" />
+            <img src="/logo.png" alt="Sova Logo" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="font-bold text-lg">AI Sova Support</h1>
@@ -206,9 +218,9 @@ export default function ChatPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 bg-brand-black-light/80 px-3 py-1.5 rounded-full border border-white/5">
-          <span className={`w-2 h-2 rounded-full ${kbReady ? 'bg-brand-mint animate-pulse' : 'bg-amber-500'}`} />
+          <span className={`w-2 h-2 rounded-full ${kbReady ? 'bg-brand-mint animate-pulse' : kbError ? 'bg-red-500' : 'bg-amber-500'}`} />
           <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-            {kbReady ? "Ready" : "Loading..."}
+            {kbReady ? "Ready" : kbError ? "Error" : "Loading..."}
           </span>
         </div>
       </header>
@@ -218,7 +230,7 @@ export default function ChatPage() {
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
             <div className="w-20 h-20 bg-brand-mint/5 rounded-full flex items-center justify-center mb-6">
-              <img src="/favicon.ico" alt="Sova" className="w-12 h-12 grayscale opacity-50" />
+              <img src="/logo.png" alt="Sova" className="w-12 h-12 grayscale opacity-50" />
             </div>
             <p className="text-xl font-medium mb-2">How can I help you?</p>
             <p className="text-sm max-w-xs">Ask about fees, security, or how to start with Sova Protocol.</p>
