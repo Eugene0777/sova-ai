@@ -39,21 +39,18 @@ export default function ChatPage() {
 
   // ── Load KB ─────────────────────────────────────────────────────────────────
   useEffect(() => {
-    console.log("Starting KB load...");
     fetch("/kb/chunks_with_vectors.json")
       .then((r) => {
-        console.log("KB Response status:", r.status);
         if (!r.ok) throw new Error("Failed to load KB file: " + r.status);
         return r.json();
       })
       .then((data) => {
-        console.log("KB Data loaded successfully, chunks:", data.length);
         kbRef.current = data;
         setKbReady(true);
         setKbError(false);
       })
       .catch((err) => {
-        console.error("KB Load Error:", err);
+        console.error("Knowledge Base failed to load:", err);
         setKbReady(false);
         setKbError(true);
       });
