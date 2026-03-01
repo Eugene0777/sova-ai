@@ -261,17 +261,21 @@ export default function ChatPage() {
                       ol: ({ ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
                       li: ({ ...props }) => <li className="mb-1 ml-1" {...props} />,
                       strong: ({ ...props }) => <strong className="font-bold text-brand-mint" {...props} />,
+                      em: ({ ...props }) => <em className="italic text-brand-mint/90" {...props} />,
                     }}
                   >
                     {m.content
-                      // 1. Fix cases like "1.Text" or "1. **Text" -> "1. Text"
-                      .replace(/(\d+)\.(?!\s)/g, '$1. ')
-                      // 2. Fix cases like "2.**Text**" -> "2. **Text**"
-                      .replace(/(\d+)\.(\*\*)/g, '$1. $2')
-                      // 3. Fix cases like "Text. 2. Text" -> "Text.\n\n2. Text" (fused items)
-                      .replace(/([.!?])\s*(\d+\.)\s+/g, '$1\n\n$2 ')
-                      // 4. Ensure space after bullet points
-                      .replace(/^([-*•])\s*/gm, '$1 ')
+                      // 1. Force formatting list labels that AI forgot to bold: "- Label: Description" -> "- **Label**: Description"
+                      .replace(/^- ([A-Za-z\s/→]+):/gm, '- **$1**:')
+
+                      // 2. Ensure double newline before any list start (- or *)
+                      .replace(/([.!?])\s*\n([-*•])/g, '$1\n\n$2')
+
+                      // 3. Fix missing space after bullet points
+                      .replace(/^([-*•])(?=[^\s])/gm, '$1 ')
+
+                      // 4. Cleanup stray stars at the end of headings (like Fee:*)
+                      .replace(/:(\*)/g, ':')
                     }
                   </ReactMarkdown>
                 </div>

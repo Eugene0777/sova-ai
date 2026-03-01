@@ -11,7 +11,7 @@ export const runtime = "edge";
 
 const OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "openai/gpt-4o-mini";
-const TEMPERATURE = 0.2;
+const TEMPERATURE = 0.0;
 const MAX_TOKENS = 800; // Ограничение на длину ответа
 const MAX_MESSAGE_LENGTH = 10000;
 const MAX_HISTORY_MESSAGES = 15;
@@ -19,24 +19,19 @@ const MAX_HISTORY_MESSAGES = 15;
 // Лимит: 30 запросов на 10 минут
 const RATE_LIMIT_CONFIG = { limit: 30, windowMs: 10 * 60 * 1000 };
 
-const SYSTEM_PROMPT = `You are a support bot for Sova (https://docs.sova.io).
+const SYSTEM_PROMPT = `You are a support bot for Sova Protocol (https://docs.sova.io).
+Answer based ONLY on context.
 
-RULES:
-1. Answer ONLY based on the provided CONTEXT.
-2. If the answer is not in the CONTEXT - say: "This information was not found in Sova documentation."
-3. DO NOT write a list of links or sources at the end of the response.
-4. Respond in English by default.
-5. FORMATTING: Use strict Markdown. 
-   - ALWAYS put a blank line before and after a list.
-   - For lists, use "1. ", "2. " (number + dot + space).
-   - Use **Bold** for emphasis.
-   - Example:
-     Here are the steps:
+MARKDOWN RULES:
+- Use bullet points ("- ") for lists.
+- ALWAYS use the format: "- **Key Term**: Description" for list items.
+- Bold EVERY key term, label, or category name with **double asterisks**.
+- ALWAYS put a blank line before starting a list.
+- If you mention a fee or specific component, BOLD IT.
 
-     1. **First Item**: description.
-
-     2. **Second Item**: description.
-6. Be concise and professional.`;
+EXAMPLE:
+- **Management Fee**: 0% annual fee.
+- **Support**: Available 24/7.`;
 
 export async function POST(request: Request): Promise<Response> {
     // 1. Security: Origin check
