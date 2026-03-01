@@ -265,16 +265,14 @@ export default function ChatPage() {
                     }}
                   >
                     {m.content
-                      // 1. Force formatting list labels that AI forgot to bold: "- Label: Description" -> "- **Label**: Description"
-                      .replace(/^- ([A-Za-z\s/→]+):/gm, '- **$1**:')
-
-                      // 2. Ensure double newline before any list start (- or *)
+                      // 1. Ensure basic list structure (double newline before bullet)
                       .replace(/([.!?])\s*\n([-*•])/g, '$1\n\n$2')
 
-                      // 3. Fix missing space after bullet points
+                      // 2. Fix missing space after bullet points
                       .replace(/^([-*•])(?=[^\s])/gm, '$1 ')
 
-                      // 4. Cleanup stray stars at the end of headings (like Fee:*)
+                      // 3. Cleanup: If AI leaves lone asterisks or malformed bolding
+                      .replace(/\*\*\s+:/g, '**:')
                       .replace(/:(\*)/g, ':')
                     }
                   </ReactMarkdown>

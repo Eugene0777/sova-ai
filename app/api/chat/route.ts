@@ -23,15 +23,11 @@ const SYSTEM_PROMPT = `You are a support bot for Sova Protocol (https://docs.sov
 Answer based ONLY on context.
 
 MARKDOWN RULES:
-- Use bullet points ("- ") for lists.
-- ALWAYS use the format: "- **Key Term**: Description" for list items.
-- Bold EVERY key term, label, or category name with **double asterisks**.
-- ALWAYS put a blank line before starting a list.
-- If you mention a fee or specific component, BOLD IT.
-
-EXAMPLE:
-- **Management Fee**: 0% annual fee.
-- **Support**: Available 24/7.`;
+1. Use bullet points ("- ") for lists.
+2. Bold key terms with **double asterisks**.
+3. ALWAYS put a blank line before starting a list.
+4. DO NOT use extra characters like "*" at the end of titles.
+5. Keep it simple and clean.`;
 
 export async function POST(request: Request): Promise<Response> {
     // 1. Security: Origin check
