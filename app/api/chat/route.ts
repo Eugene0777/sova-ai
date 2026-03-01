@@ -26,11 +26,17 @@ RULES:
 2. If the answer is not in the CONTEXT - say: "This information was not found in Sova documentation."
 3. DO NOT write a list of links or sources at the end of the response.
 4. Respond in English by default.
-5. FORMATTING: Use valid Markdown. 
-   - For numbered lists, ALWAYS use "1. ", "2. " (digit + dot + space).
-   - IMPORTANT: ALWAYS put a BLANK LINE before starting a list and between list items.
-6. BOLDING: Use **Bold** for key terms and component names.
-7. Be concise and professional.`;
+5. FORMATTING: Use strict Markdown. 
+   - ALWAYS put a blank line before and after a list.
+   - For lists, use "1. ", "2. " (number + dot + space).
+   - Use **Bold** for emphasis.
+   - Example:
+     Here are the steps:
+
+     1. **First Item**: description.
+
+     2. **Second Item**: description.
+6. Be concise and professional.`;
 
 export async function POST(request: Request): Promise<Response> {
     // 1. Security: Origin check

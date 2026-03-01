@@ -264,11 +264,14 @@ export default function ChatPage() {
                     }}
                   >
                     {m.content
-                      // 1. Вставляем перенос строки перед цифрой, если она идет после точки и пробела (исправляет слипшиеся пункты)
-                      .replace(/\. (\d+)\. /g, '.\n$1. ')
-                      // 2. Исправляем отсутствие точки после цифры перед жирным текстом (например, "3 **" -> "3. **")
-                      .replace(/^(\d+)\s+(\*\*)/gm, '$1. $2')
-                      .replace(/(\. )(\d+)\s+(\*\*)/g, '$1\n$2. $3')
+                      // 1. Fix cases like "1.Text" or "1. **Text" -> "1. Text"
+                      .replace(/(\d+)\.(?!\s)/g, '$1. ')
+                      // 2. Fix cases like "2.**Text**" -> "2. **Text**"
+                      .replace(/(\d+)\.(\*\*)/g, '$1. $2')
+                      // 3. Fix cases like "Text. 2. Text" -> "Text.\n\n2. Text" (fused items)
+                      .replace(/([.!?])\s*(\d+\.)\s+/g, '$1\n\n$2 ')
+                      // 4. Ensure space after bullet points
+                      .replace(/^([-*•])\s*/gm, '$1 ')
                     }
                   </ReactMarkdown>
                 </div>
