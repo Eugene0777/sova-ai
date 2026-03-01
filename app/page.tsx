@@ -163,27 +163,32 @@ export default function ChatPage() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let done = false;
+      let buffer = "";
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        if (value) {
-          const chunk = decoder.decode(value);
-          const lines = chunk.split("\n").filter(l => l.trim() !== "");
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const dataStr = line.replace("data: ", "");
-              if (dataStr === "[DONE]") {
-                done = true;
-                break;
-              }
-              try {
-                const json = JSON.parse(dataStr);
-                const token = json.choices[0]?.delta?.content || "";
-                if (token) updateLastAssistantMessage(token);
-              } catch (e) { }
-            }
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        let lines = buffer.split("\n");
+        // Keep the last partial line in the buffer
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith("data: ")) continue;
+
+          const dataStr = trimmed.substring(6); // Remove "data: "
+          if (dataStr === "[DONE]") break;
+
+          try {
+            const json = JSON.parse(dataStr);
+            const token = json.choices[0]?.delta?.content || "";
+            if (token) updateLastAssistantMessage(token);
+          } catch (e) {
+            // If JSON is incomplete, add it back to buffer (though pop should handle this)
+            // But usually this happens if the line itself was split
           }
         }
       }
@@ -256,23 +261,26 @@ export default function ChatPage() {
                 <div className="prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown
                     components={{
+                      h3: ({ ...props }) => <h3 className="text-brand-mint font-bold mt-4 mb-2" {...props} />,
                       p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
-                      ul: ({ ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
-                      ol: ({ ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
+                      ul: ({ ...props }) => <ul className="list-disc ml-4 mb-2 space-y-1" {...props} />,
+                      ol: ({ ...props }) => <ol className="list-decimal ml-4 mb-2 space-y-1" {...props} />,
                       li: ({ ...props }) => <li className="mb-1 ml-1" {...props} />,
                       strong: ({ ...props }) => <strong className="font-bold text-brand-mint" {...props} />,
                       em: ({ ...props }) => <em className="italic text-brand-mint/90" {...props} />,
                     }}
                   >
                     {m.content
-                      // 1. Ensure basic list structure (double newline before bullet)
+                      // 1. Force bold labels in lists: "- Label: description" -> "- **Label**: description"
+                      .replace(/^([-*•])\s+([A-Za-z\s]+):/gm, '$1 **$2**:')
+
+                      // 2. Bold stray labels: "Label: description" at start of line
+                      .replace(/^([A-Z][A-Za-z\s]+):(?!\/)/gm, '**$1**:')
+
+                      // 3. Force a blank line before list items if they follow text
                       .replace(/([.!?])\s*\n([-*•])/g, '$1\n\n$2')
 
-                      // 2. Fix missing space after bullet points
-                      .replace(/^([-*•])(?=[^\s])/gm, '$1 ')
-
-                      // 3. Cleanup: If AI leaves lone asterisks or malformed bolding
-                      .replace(/\*\*\s+:/g, '**:')
+                      // 4. Remove stray asterisks after colons
                       .replace(/:(\*)/g, ':')
                     }
                   </ReactMarkdown>
